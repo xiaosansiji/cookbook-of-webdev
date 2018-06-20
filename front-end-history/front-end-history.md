@@ -41,7 +41,7 @@ Tim Berners-Lee 建立了世界上第一个网站，可以点击[这里](http://
 
 在 web 出现后的很多年里，都不存在独立的前端开发概念，直到 JavaScript 出现，我们的页面有了“逻辑”，也真正“动”了起来。
 
-我非常喜欢[王下邀月熊](https://github.com/wxyyxc1992) 同学的这份 [Web 开发简史与运行机制](https://github.com/wxyyxc1992/Web-Series/blob/master/%E5%AF%BC%E8%AE%BA/%E5%BC%80%E5%8F%91%E7%AE%80%E5%8F%B2%E4%B8%8E%E5%8F%98%E8%BF%81.md) ，在此放一下王下做的前端发展历史总结：
+我非常喜欢[王下邀月熊](https://github.com/wxyyxc1992) 同学的这份 [Web 开发简史与运行机制](https://github.com/wxyyxc1992/Web-Series/blob/master/%E5%AF%BC%E8%AE%BA/%E5%BC%80%E5%8F%91%E7%AE%80%E5%8F%B2%E4%B8%8E%E5%8F%98%E8%BF%81.md) ，在此放一下王下做的前端发展历史总结表：
 
 | Era/ 时代   | Timeline/ 时间线  | Problems/ 问题        | Innovations/ 创新           | Dominant Browsers/ 主流浏览器                 |
 | --------- | -------------- | ------------------- | ------------------------- | ---------------------------------------- |
@@ -50,7 +50,7 @@ Tim Berners-Lee 建立了世界上第一个网站，可以点击[这里](http://
 | SPA 时代    | 大概 2010-2014   | DHTML 过载，大规模数据操作，性能 | MVC 框架，双向数据流，DOM 自动化      | Google Chrome，Microsoft IE ， Mozilla Firefox，Apple Safari |
 | 现代        | 大概 2014- 现在    | 性能，复杂应用的状态管理，可用性    | Virtual DOM，单向数据流，类型系统，测试 | Google Chrome，Apple Safari               |
 
-大约从 jQuery 时代开始，渐渐的开始有了前端开发岗概念，不过在这一阶段，后端工程师主导了整个 web 产品，在这些以ASP.Net  JSP 为代表的技术栈中，前端工作只占很小的部分，重业务逻辑，弱展现弱交互。这时前端开发工程师在MVC中负责 View 层，样式开始多样起来，如下图所示，我们的前辈们主要在各类后端模板中写静态结构和样式：
+如上，大约从 jQuery 时代开始，渐渐的开始有了前端开发岗概念，不过在这一阶段，后端工程师主导了整个 web 产品，在这些以ASP.Net  JSP 为代表的技术栈中，前端工作只占很小的部分，重业务逻辑，弱展现弱交互。这时前端开发工程师在MVC中负责 View 层，样式开始多样起来，如下图所示，我们的前辈们主要在各类后端模板中写静态结构和样式：
 
 ![jsp](./jsp.png)
 
