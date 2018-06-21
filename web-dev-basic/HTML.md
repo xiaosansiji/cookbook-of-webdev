@@ -42,6 +42,6 @@ HTML5赋予网页更好的意义和结构。更加丰富的标签将随着对RDF
 
 ## 学习参考
 
-[MDN web docs/HTML]: https://developer.mozilla.org/zh-CN/docs/Web/HTML
-[菜鸟 HTML5 在线学习]: http://www.runoob.com/html/html5-intro.html
-[W3shool HTML5 参考手册]: http://www.w3school.com.cn/html5/html5_reference.asp
+[MDN web docs/HTML]: https://developer.mozilla.org/zh-CN/docs/Web/HTML	"MDN web docs/HTML"
+[菜鸟 HTML5 在线学习]: http://www.runoob.com/html/html5-intro.html	"菜鸟 HTML5 在线学习"
+[W3shool HTML5 参考手册]: http://www.w3school.com.cn/html5/html5_reference.asp	"W3shool HTML5 参考手册"
