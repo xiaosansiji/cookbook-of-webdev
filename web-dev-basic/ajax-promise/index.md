@@ -98,6 +98,6 @@ async () => {
 
 Fetch 底层基于 Promise 实现，关于 Promise 我会在单独章节详细说明：Promise 其实是函数式编程范式的一种实践。
 
-Fetch 本身提供了 Headers、Request、Response 三个接口，这与现代 HTTP 协议中的概念保持一致，同时如果你有过 Nodejs/Go 等后端开发经验的话，你会发现这些语言的 HTTP 处理接口也是这样的，经过重新设计的 Fetch 明显比 AJAX 更容易理解。现在大多数现代浏览器都已经支持 Fetch，我们也确实不太需要那些 AJAX 封装库。
+Fetch 本身提供了 Headers、Request、Response 三个接口，这与现代 HTTP 协议中的概念保持一致，如果你有过 Nodejs/Go 等后端开发经验的话，你会发现这些语言的 HTTP 处理接口也是这样的，经过重新设计的 Fetch 明显比 AJAX 更容易理解和配置。现在大多数现代浏览器都已经支持 Fetch，我们也确实不太需要那些 AJAX 封装库。
 
-当然相比 AJAX，Fetch 也有许多不足：比如 Fetch 不能在请求时间过长等情况下手动 abort 请求，当然根据 Promise 规范的定义，现在使用 Fetch 做文件上传等耗时请求时，我们无法获得时时进度（虽然我觉得这个功能得不偿失）。以上两种场景不是特别常见，日常开发中我还是建议使用更现代的 Fetch 方案。
+当然相比 AJAX，Fetch 也有许多不足：比如 Fetch 不能在请求时间过长等情况下手动 abort 请求；根据 Promise 规范的定义，现在使用 Fetch 做文件上传等耗时请求时，我们无法获得时时进度（虽然我觉得这个功能得不偿失）。以上两种场景不是特别常见，日常开发中我还是建议使用更现代的 Fetch 方案。
