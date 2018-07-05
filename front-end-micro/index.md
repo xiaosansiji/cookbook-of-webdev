@@ -1,8 +1,9 @@
 参考链接
 
 [如何实现前端微服务化？]: https://segmentfault.com/p/1210000010459082/read
-[如何解构单体前端应用——前端应用的微服务式拆分]: http://baijiahao.baidu.com/s?id=1595295714541106181&amp;amp;wfr=spider&amp;amp;for=pc
+[如何解构单体前端应用——前端应用的微服务式拆分]: http://baijiahao.baidu.com/s?id=1595295714541106181&amp;amp;amp;wfr=spider&amp;amp;amp;for=pc
 [微前端 - 将微服务理念延伸到前端开发中]: https://www.cnblogs.com/zhuanzhuanfe/p/7644846.html
+[微前端的那些事儿]: https://github.com/phodal/microfrontends
 
 因为我们团队前端开发技术栈比较统一，也还不存在需要兼容遗留系统的问题，所以采用如下方案：
 
