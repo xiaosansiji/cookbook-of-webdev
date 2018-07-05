@@ -8,7 +8,7 @@
 
 同源策略是浏览器的一种安全限制，它限制了从同一个源加载的文档或脚本如何与来自另一个源的资源进行交互，这是一个用于隔离潜在恶意文件的重要安全机制。
 
-我们在前端开发过程中遇到的某些资源，如 DOM、AJAX/Fetch 返回的异步数据及浏览器本地存储的 Cookie、localStorage 等，一般会比较敏感。
+我们在前端开发过程中遇到的某些资源，如 DOM、Ajax/Fetch 返回的异步数据及浏览器本地存储的 Cookie、localStorage 等，一般会比较敏感。
 
 想象以下场景，我们登录在线银行，这个站点依赖 Cookie 来保护我们的用户信息：只有正常登录认证过的用户，服务器端会在浏览器中存储一个生成的 Cookie 来标识这个用户，允许正常进行转账操作。而在浏览完这个站点后，我们又访问了一个恶意站点，如果没有同源策略限制，这个恶意网站也可以拿到银行站点存储的 Cookie 并传输给别人，那么在这个 Cookie 过期之前，别人可以把你的银行卡搬空。。
 
@@ -68,7 +68,7 @@ Content-Language: zh-CN
 
 ![cross-domain-error.png](./cross-domain-error.png)
 
-在日常前端开发工作中，我们遇到的更多是上面这样的报错：我们从 `localhost:8000` 发起了一个 AJAX 请求到 `www.google.com.hk` 站点，然后我们没能拿到想要的数据，反而在 console 中提示了上图的错误。
+在日常前端开发工作中，我们遇到的更多是上面这样的报错：我们从 `localhost:8000` 发起了一个 Ajax 请求到 `www.google.com.hk` 站点，然后我们没能拿到想要的数据，反而在 console 中提示了上图的错误。
 
 这其实就是因为同源策略限制，我们的跨域请求失败了。需要注意其实我们的请求是已经发送到目标服务器了，对方接口也正常返回了数据，只是在返回到浏览器时被 block [^1]了（回想本篇开头的同源策略定义，它是**浏览器**的安全策略）。
 
@@ -84,10 +84,10 @@ Content-Language: zh-CN
 
 > JSONP：JSON with Padding
 
-我们在使用 jQuery 等封装的 AJAX 库时经常这样使用 JSONP：
+我们在使用 jQuery 等封装的 Ajax 库时经常这样使用 JSONP：
 
 ```javascript
-$.ajax({
+$.Ajax({
   type: "get",
   async: false,
   url: "http://demo.com/api/current?user=1",
@@ -99,9 +99,9 @@ $.ajax({
 });
 ```
 
-这让我们产生了一种错觉，仿佛 JSONP 也是 AJAX 的一种，毕竟我们正常发起请求时也只是将 `dataType` 改为 `json` 而已。
+这让我们产生了一种错觉，仿佛 JSONP 也是 Ajax 的一种，毕竟我们正常发起请求时也只是将 `dataType` 改为 `json` 而已。
 
-但 JSONP 其实跟 AJAX/Fetch 都没什么关系，它用一种比较 hack 的方式实现跨域 HTTP 接口交互：在同源策略章节我们已经说过，在页面中使用 `script` 标签加载 CDN 上的 JavaScript 资源文件是不受同源策略限制的。程序员们就想到如果我们请求的 JavaScript 文件是后端动态生成的，在浏览器端执行了这一段 JavaScript 代码后岂不是就拿到了后端接口的数据！
+但 JSONP 其实跟 Ajax/Fetch 都没什么关系，它用一种比较 hack 的方式实现跨域 HTTP 接口交互：在同源策略章节我们已经说过，在页面中使用 `script` 标签加载 CDN 上的 JavaScript 资源文件是不受同源策略限制的。程序员们就想到如果我们请求的 JavaScript 文件是后端动态生成的，在浏览器端执行了这一段 JavaScript 代码后岂不是就拿到了后端接口的数据！
 
 于是上述代码的底层实现其实是这样的：
 
@@ -131,13 +131,13 @@ server.on('request', function(req, res) {
 
 这样页面上请求到后端数据后就可以直接调用 `callback` 方法进行后续数据展示处理了。
 
-可以看到 JSONP 的底层实现跟 AJAX 的 XHR 完全不同，只是 jQuery 帮我们封装了这些操作而已。
+可以看到 JSONP 的底层实现跟 Ajax 的 XHR 完全不同，只是 jQuery 帮我们封装了这些操作而已。
 
 JSONP 方案可以运行在任何允许执行 JavaScript 脚本的浏览器上，兼容性较好，但也存在很多限制：
 
 - 需要后端同学的支持：正常返回的 JSON 数据需要处理一下，变成浏览器可以执行的脚本
 - 仅支持 GET 方法的请求：如代码示例中展示的，我们只能发起 GET 请求，且所有参数只能添加到 url 中
-- 对于错误的支持不好：不像 AJAX 和 Fetch 都有较好的错误处理接口，JSONP 失败了只会在控制台输出一句 error 而已
+- 对于错误的支持不好：不像 Ajax 和 Fetch 都有较好的错误处理接口，JSONP 失败了只会在控制台输出一句 error 而已
 
 总的来说，我们在日常与后端接口交互中较少采用 JSONP 方案，在投放广告等领域用的比较多。
 
@@ -178,7 +178,7 @@ server {
 
 > CORS：cross-origin sharing 跨域资源共享
 
-对于 AJAX 和 Fetch 来说，CORS 是现在最可靠的跨域解决方案，它本身已经加入 [W3C 规范](https://www.w3.org/TR/cors/) 。现在各主流浏览器都允许服务器端返回 HTTP 请求时增加相应 header 设置，以声明浏览器端发出的请求有权限做哪些操作。上节说过，同源策略会使得浏览器在服务端返回数据时阻塞该响应，而当我们在 Response header 中增加了相关 CORS 声明后，浏览器就可以放行该响应，让 JavaScript 继续后续的数据处理和展示工作。这相当于让服务器端为我们的请求“背书”，该服务器明确告知浏览器：我允许该站点跨域获取我的接口数据。
+对于 Ajax 和 Fetch 来说，CORS 是现在最可靠的跨域解决方案，它本身已经加入 [W3C 规范](https://www.w3.org/TR/cors/) 。现在各主流浏览器都允许服务器端返回 HTTP 请求时增加相应 header 设置，以声明浏览器端发出的请求有权限做哪些操作。上节说过，同源策略会使得浏览器在服务端返回数据时阻塞该响应，而当我们在 Response header 中增加了相关 CORS 声明后，浏览器就可以放行该响应，让 JavaScript 继续后续的数据处理和展示工作。这相当于让服务器端为我们的请求“背书”，该服务器明确告知浏览器：我允许该站点跨域获取我的接口数据。
 
 在 CORS 中的配置分为“简单请求”和“需预检的请求”两种。
 
@@ -270,7 +270,7 @@ fetch(url, {
 - [`Access-Control-Allow-Origin`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Origin):  `<origin> | *` 例，`http://arunranga.com`
 - [`Access-Control-Expose-Headers`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Expose-Headers) : `<field-name>[, <field-name>]*` 例，`x-current-group`
 - [`Access-Control-Allow-Methods`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Methods) : `<method>[, <method>]*` 例，`PUT, OPTIONS`
-- [`Access-Control-Allow-Credentials`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials) : bool 设置为 `true` 时允许浏览器端携带 Cookie 等 Credentials 访问接口，这个除了服务端要设置外，浏览器请求的中也要设置，AJAX 是 `xhr.withCredentials = true;` Fetch 中是 `credentials: 'include'`
+- [`Access-Control-Allow-Credentials`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials) : bool 设置为 `true` 时允许浏览器端携带 Cookie 等 Credentials 访问接口，这个除了服务端要设置外，浏览器请求的中也要设置，Ajax 是 `xhr.withCredentials = true;` Fetch 中是 `credentials: 'include'`
 - [`Access-Control-Max-Age`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Max-Age) : <delta-seconds> 注意单位是秒
 
 ### 其他 CORS 用法
@@ -287,9 +287,11 @@ fetch(url, {
 
 ## 参考链接：
 
-[浏览器跨域方法与基于Fetch的Web请求最佳实践]: https://segmentfault.com/a/1190000006095018
-[浏览器的同源策略]: https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy
-[HTTP cookies]: https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies
-[JSONP 教程]: http://www.runoob.com/json/json-jsonp.html
-[HTTP访问控制（CORS）]: https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS
+- [浏览器跨域方法与基于Fetch的Web请求最佳实践](https://segmentfault.com/a/1190000006095018)
+- [浏览器的同源策略](https://developer.mozilla.org/zh-CN/docs/Web/Security/Same-origin_policy)
+- [HTTP cookies](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Cookies)
+- [JSONP 教程](http://www.runoob.com/json/json-jsonp.html)
+- [HTTP访问控制（CORS）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS)
+
+
 

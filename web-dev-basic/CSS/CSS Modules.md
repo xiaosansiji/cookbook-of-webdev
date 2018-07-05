@@ -57,8 +57,9 @@ function H1() => (<div className={styles.title}>haha</div>)
 
 ## 参考链接
 
-[BEM 官网]: http://getbem.com/	"BEM"
-[CSS Evolution: From CSS, SASS, BEM, CSS Modules to Styled Components]: https://medium.com/@perezpriego7/css-evolution-from-css-sass-bem-css-modules-to-styled-components-d4c1da3a659b	"CSS Evolution: From CSS, SASS, BEM, CSS Modules to Styled Components"
-[CSS Modules 用法教程 - 阮一峰]: http://www.ruanyifeng.com/blog/2016/06/css_modules.html	"CSS Modules 用法教程"
-[CSS Modules]: https://github.com/css-modules/css-modules	"CSS Modules"
+- [BEM 官网](http://getbem.com/)
+- [CSS Evolution: From CSS, SASS, BEM, CSS Modules to Styled Components](https://medium.com/@perezpriego7/css-evolution-from-css-sass-bem-css-modules-to-styled-components-d4c1da3a659b)
+- [CSS Modules 用法教程 - 阮一峰](http://www.ruanyifeng.com/blog/2016/06/css_modules.html)
+- [CSS Modules](https://github.com/css-modules/css-modules)
+
 

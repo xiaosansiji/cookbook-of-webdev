@@ -38,6 +38,6 @@ CSS 需要掌握的基本知识有：
 
 ## 参考链接
 
-[MDN CSS：层叠样式表]: https://developer.mozilla.org/zh-CN/docs/Web/CSS
-[菜鸟 CSS3 教程]: http://www.runoob.com/css3/css3-tutorial.html
+- [MDN CSS：层叠样式表](https://developer.mozilla.org/zh-CN/docs/Web/CSS)
+- [菜鸟 CSS3 教程](http://www.runoob.com/css3/css3-tutorial.html)
 
