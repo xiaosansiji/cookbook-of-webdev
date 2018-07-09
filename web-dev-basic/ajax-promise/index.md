@@ -104,6 +104,14 @@ Fetch 本身提供了 Headers、Request、Response 三个接口，这与现代 H
 
 当然相比 Ajax，Fetch 也有许多不足：比如 Fetch 不能在请求时间过长等情况下手动 abort 请求；根据 Promise 规范的定义，现在使用 Fetch 做文件上传等耗时请求时，我们无法获得时时进度（而 Ajax 可以通过 [XMLHttpRequest.upload](https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest/upload) 提供的指定事件来获得）。以上两种场景不是特别常见，日常开发中我还是建议使用更现代的 Fetch 方案。
 
+## 注意
+
+有很多浏览器，如老版本的 IE 等不支持 Promise，当然也就不支持 Fetch，它们大多需要引入各类 polyfill 来做兼容性处理，但是注意它们有些其实是通过 setTimeout 来模拟的，是属于宏任务（macrotask），并不是 Promise 的微任务（microtask）[^3]，在某些情况下可能会发现任务执行顺序与预想的不一致的问题。
+
+[^3]: 宏任务与微任务请参见 JavaScript 章节
+
+
+
 ## 参考链接
 
 - [前端的异步解决方案之Promise和Await/Async](https://scq000.github.io/2016/11/05/%E5%89%8D%E7%AB%AF%E7%9A%84%E5%BC%82%E6%AD%A5%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E4%B9%8BPromise%E5%92%8CAwait-Async/)
