@@ -12,4 +12,7 @@
 - [ossu/computer-science](https://github.com/ossu/computer-science)
 - [dypsilon/frontend-dev-bookmarks](https://github.com/dypsilon/frontend-dev-bookmarks)
 - [jwasham/coding-interview-university](https://github.com/jwasham/coding-interview-university)
+- [送给前端的你，推荐几篇前端汇总文章](https://zhuanlan.zhihu.com/p/22229868)
+- [前端每周清单半年盘点之 CSS 篇](https://zhuanlan.zhihu.com/p/29065136)
+- [有哪些值得关注的技术博客（前端篇）](https://zhuanlan.zhihu.com/p/22276837)
 

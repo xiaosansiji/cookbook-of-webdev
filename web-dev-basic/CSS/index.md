@@ -8,6 +8,8 @@ CSS 按照 W3C 规范被分为CSS1 现已废弃， CSS2.1 是推荐标准， [CS
 
 CSS 在 web 前端开发“三剑客”（HTML、CSS、JavaScript）中的精通难度应该是最容易被忽视的，如果你觉得自己 CSS 掌握的已经很好了，欢迎来[这里](https://github.com/you-dont-need/You-Dont-Need-JavaScript)打脸。
 
+推荐阅读的书籍是《CSS权威指南》和《图解CSS3：核心技术与案例实践》，分别从 CSS2.1 和 CSS3 两个版本讲解了 CSS 的知识。
+
 CSS 需要掌握的基本知识有：
 
 **常见 block/inline/inline-block 元素**
@@ -20,15 +22,23 @@ CSS 需要掌握的基本知识有：
 
 **CSS3 变换与动画**
 
+**浮动布局**
+
+**PSD切图，蓝湖等在线工具使用**
+
+最后一条不属于 CSS 本身的知识，但快速准确的实现 UI 同事提供的设计稿是前端必备的一项技能。
+
 在工程实践中，因为 CSS 本身存在全局样式污染、~~无法使用变量共享配置等问题~~ [^1]，业界提出了 Less、Sass、CSS in JS 等技术
 
 [^1]: 现在包括 Edge 等在内的现代浏览器都已经支持CSS 变量了，详情参看阮一峰老师的[博客](http://www.ruanyifeng.com/blog/2017/05/css-variables.html) 。但这并不意味着 Sass 等就没有存在的意义了，它们提供了很多其他高级的语法特性以弥补现有 CSS 规范的不足。
 
-
+CSS 其实是一种容易写，却难维护的语言，其维护成本很大程度上来自于它没有完善的模块系统，导致我们的代码无法有效的组织和管理，为了解决这些问题我们在工程实践上经常采用如下方案：
 
 ## 预处理器和后处理器
 
 ## CSS Modules
+
+[查看](./CSS Modules.md)
 
 ## ClassNames
 
@@ -40,4 +50,6 @@ CSS 需要掌握的基本知识有：
 
 - [MDN CSS：层叠样式表](https://developer.mozilla.org/zh-CN/docs/Web/CSS)
 - [菜鸟 CSS3 教程](http://www.runoob.com/css3/css3-tutorial.html)
+- [React拾遗：从10种现在流行的 CSS 解决方案谈谈我的最爱 （上）](https://juejin.im/post/5b39e63ae51d4562aa017c81)
+
 
