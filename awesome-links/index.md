@@ -29,6 +29,7 @@
 - [CyC2018/Interview-Notebook](https://github.com/CyC2018/Interview-Notebook)
 - [jobbole/awesome-programming-books](https://github.com/jobbole/awesome-programming-books)
 - [EZLippi/practical-programming-books](https://github.com/EZLippi/practical-programming-books)
+- [donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer)
 
 ## AI
 
