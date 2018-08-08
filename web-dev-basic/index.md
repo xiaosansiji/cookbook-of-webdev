@@ -9,6 +9,7 @@
 [查看](./CSS.md)
 
 ## JavaScript
+[查看](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/web-dev-basic/JavaScript/index.md)
 
 ## SVG 图像处理
 
