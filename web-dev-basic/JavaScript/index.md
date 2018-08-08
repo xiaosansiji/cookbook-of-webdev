@@ -44,3 +44,5 @@ TypeScript 是微软贡献的 ECMAScript 实现语言，我们一般认为相比
 
 [^1]: 众所周知，JavaScript 是一门动态类型语言，足够灵活，但这对于一个大型项目来说增加了运行时的不可预知性。TypeScript 提供的类型系统，可以在编译阶段就发现这些类型定义和使用的问题，同时语言层面增加的接口、泛型等特性，可以帮我们更好的以面向对象的编程范式完成代码的抽象和复用。
 
+## 模块机制
+长久以来在 JS 的世界里“模块”这个词常常意味着黑科技，ES6 之前 JavaScript 从语言层面并不不能很好支持我们以模块化的方式构建代码，为了更好的理解 JS 里的模块，我特意梳理了下前端发展历史中出现的那些“模块化”方案，请参看这一[章节](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/web-dev-basic/JavaScript/module.md)。
