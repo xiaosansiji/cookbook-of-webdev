@@ -38,7 +38,7 @@ CSS 其实是一种容易写，却难维护的语言，其维护成本很大程�
 
 ## CSS Modules
 
-[查看](./CSS Modules.md)
+[查看](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/web-dev-basic/CSS/CSS%20Modules.md)
 
 ## ClassNames
 
