@@ -3,7 +3,7 @@
 需要掌握的知识有：
 
 - URL ：[什么是URL？](https://developer.mozilla.org/zh-CN/docs/Learn/Common_questions/What_is_a_URL)
-- 同源策略与跨域解决方案 [查看](https://github.com/xiaosansiji/cookbook-of-webdev/http/cros-origin.md)
+- 同源策略与跨域解决方案 [查看](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/http/cros-origin.md)
 - 缓存机制 [查看](https://github.com/xiaosansiji/cookbook-of-webdev/http/cache.md)
 
 在此推荐两本书，《HTTP权威指南》与《图解HTTP》，权威指南这本书可以当作工具书来用，入门学习的话可以选择图解。
