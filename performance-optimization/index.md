@@ -4,13 +4,13 @@
 
 一次网页加载的过程：
 
-![image-20181109142635337](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/image-20181109142635337.png)
+![image-20181109142635337](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/image-20181109142635337.png)
 
 常见性能指标：白屏时间、首次有效渲染时间、用户可交互时间、整页时间、DNS时间、CPU占用率、动画帧率。
 
 换个角度，从用户浏览角度看待网页加载：
 
-![image-20181109144732772](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/google-performance.png)
+![image-20181109144732772](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/google-performance.png)
 
 构建用户为中心的性能模型：这些指标并非同样重要，很多时候需要根据产品形态、用户需求等赋予权重。
 
@@ -43,7 +43,7 @@
 
 将很多图片整合到一个图片文件中，利用 CSS 的 `background-position` 属性在渲染时定位到指定图片的位置。
 
-![image-20181109150646552](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/sprite-image.png)
+![image-20181109150646552](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/sprite-image.png)
 
 ##### base 64
 
@@ -106,9 +106,9 @@ gzip_disable "MSIE [1-6]\.";
 
 WebP 图片格式是由 Google 提出的一种新的网络图片格式，它提供有损和无损两种压缩方式处理原始图片：
 
-![webp-vs-jpg](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/webp-vs-jpg.png)
+![webp-vs-jpg](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/webp-vs-jpg.png)
 
-![webp-vs-png](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/webp-vs-png.png)
+![webp-vs-png](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/webp-vs-png.png)
 
 可以看到无论有损还是无损，WebP 都有相当大的压缩优势，缺点是这种格式还未成为标准，兼容性存在问题。
 
@@ -150,7 +150,7 @@ HTTP 缓存不详细说了，主要是利用 HTTP Header 中的 Etags、Expires 
 
 预加载：
 
-![image-20181112161111566](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/browser-render.png)
+![image-20181112161111566](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/browser-render.png)
 
 
 
@@ -176,7 +176,7 @@ JS 文件可以尝试使用 async`和`defer ：
 
 #####骨架屏
 
-![skeleton-vs-loading](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/skeleton-vs-loading.png)
+![skeleton-vs-loading](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/skeleton-vs-loading.png)
 
 之前大家为了优化用户体验一般会使用一些 Loading 动画，现在在移动端上更倾向于用骨架屏来提升用户体验。
 
@@ -184,7 +184,7 @@ JS 文件可以尝试使用 async`和`defer ：
 
 以下是 facebook 在弱网环境下的表现：
 
-![skeleton-facebook](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/skeleton-facebook.gif)
+![skeleton-facebook](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/skeleton-facebook.gif)
 
 ##### SSR
 
@@ -200,9 +200,9 @@ JS 文件可以尝试使用 async`和`defer ：
 
 ##### 分层渲染与 GPU 加速
 
-![image-20181109173423432](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/layer.png)
+![image-20181109173423432](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/layer.png)
 
-##### ![layers-firfox](/Users/sunzhe/code/cookbook-of-webdev/performance-optimization/layers-firfox.png)
+##### ![layers-firfox](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/layers-firfox.png)
 
 浏览器在得到 render tree 后渲染页面的大体过程如下：
 
