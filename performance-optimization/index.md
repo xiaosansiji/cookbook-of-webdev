@@ -200,8 +200,6 @@ JS 文件可以尝试使用 async`和`defer ：
 
 ##### 分层渲染与 GPU 加速
 
-![image-20181109173423432](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/layer.png)
-
 ##### ![layers-firfox](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/layers-firfox.png)
 
 浏览器在得到 render tree 后渲染页面的大体过程如下：
