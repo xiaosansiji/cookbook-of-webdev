@@ -7,4 +7,5 @@
 - [react-developer-roadmap](https://github.com/adam-golab/react-developer-roadmap)
 - [你真的理解setState吗？](https://juejin.im/post/5b45c57c51882519790c7441)
 - [React 16 加载性能优化指南](https://juejin.im/post/5b506ae0e51d45191a0d4ec9)
+- [React-HOC了解一下](https://juejin.im/post/5b87f9cb6fb9a019e308dee9)
 
