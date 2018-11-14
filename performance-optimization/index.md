@@ -174,7 +174,7 @@ JS 文件可以尝试使用 async`和`defer ：
 - async 属性的脚本会按加载完成后就执行 
 - defer 会一直等到页面渲染完成再执行，并且当有多个 defer 属性的脚本时会按照标签出现的先后顺序执行
 
-#####骨架屏
+##### 骨架屏
 
 ![skeleton-vs-loading](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/skeleton-vs-loading.png)
 
@@ -223,7 +223,7 @@ transform: translateZ(0);
 
 CSS 动画就是 GPU 直接绘制，所以我们在实现某些动画效果时应当尽量使用 CSS 动画，而非 JS 动画。
 
-#####消抖与节流
+##### 消抖与节流
 
 如果一个事件频发的被触发：
 
@@ -238,31 +238,354 @@ underscore、lodash 等工具库中都有消抖与节流函数。
 
 不同于 C/C++ 的手动管理内存，JS 有自动垃圾回收机制，但是在某些情况下也会出现内存不能及时回收的情况：如果我们使用了闭包后未将相关资源加以释放，或者引用了外链后未将其置空（比如给某DOM元素绑定了事件回调，后来却remove了该元素），及某些低版本浏览器下的循环引用等都会造成内存泄漏的情况发生。
 
+针对 React 技术栈，在 shouldComponentUpdate 或者 componentWillUpdate 方法中调用 setState 会造成 setState 的循环调用，也会造成浏览器内存占用快速上升，最终使页面卡死。
+
 ## React 技术栈下的优化方法
 
 ### 默认的优化策略
 
 #### Virtual DOM 与 Diff 算法
 
-#### React 的事件机制
+![flight-status](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/flight-status.jpeg)
+
+假设我们有一个展示航班信息的列表，大约1000行，每5s自动刷新一次，如果我们每次拿到后台接口返回的列表数据后都暴力的直接 `targetDOM.innerHtml() ` 会有比较严重的性能问题。
+
+在 jQuery 时代我们主要的解决思路是两点：
+
+1. 不在 DOM 元素上直接进行添加或修改操作
+2. 在内存中维护一个一维数组结构的对象当作一层缓存，每次拿到新的数据时与原先对象做比对，确定需要更新的元素后做精确更新，从而尽量复用 HTML 文档中原有的 DOM 结构
+
+通过以上两种方式我们可以尽量减少 reflow、repaint 从而能够针对这一特定场景做出性能优化，但一方面这样做大大增加了我们实现业务的复杂度，另一方面思路二有缺陷，我们要面对的是 DOM 的树形结构，仅仅考虑一维数组结构并不具有通用性。
+
+React 提出的通用解决方案是：
+
+1. Virtual DOM  用轻量的 JS 对象替代原生 DOM，隔离对原生 DOM 的直接操作
+2. Diff 算法针对树形结构提供了优化过的比对策略
+
+![tree-dom](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/tree-dom.png)
+
+传统树结构比对算法是循环递归的方式对节点进行遍历，其算法时间复杂度为 O(n^3)，而 React 中实现的 Diff 算法的时间复杂度优化到了 O(n)，具体实现思路为针对前端场景做了三个假设：
+
+1. DOM 节点跨层级的移动操作特别少，可以忽略不计
+2. 拥有相同类的两个组件会形成相似的树形结构，拥有不同类的两个组件会形成不同的树形结构
+3. 同一层级的一组子节点，可以通过唯一 id 进行区分
+
+针对这三个假设，React 在 Tree、Component、Element 三个粒度的对比上进行了特殊优化
+
+![react-diff](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/react-diff.png)
 
 #### setState 的特殊处理
 
+浏览器对原生 DOM 的修改操作已经做了一层优化：临近的几次对某个 DOM 对象的操作会合并成一次
+
+实际上在一些 MVVM 的框架甚至小程序等都提供类似 setState 这样的接口来批量/延迟更新数据。
+
+React 中的 setState 方法通过一个队列机制实现 state 更新，当调用 setState 的时候，会将需要更新的 state 合并之后放入状态队列，而不会立即更新。这与节流/消抖策略的思路一致：减少频繁发生的事件对页面渲染性能带来的影响。反应在组件更新上，每次在一个组件中调用 setState ，React 都会将这个组件标记为dirty。在一次事件循环结束后，React会搜索所有被标记为 dirty 的组件，并对它们进行重新渲染。
+
+![setstate-dirty](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/setstate-dirty.png)
+
+当然我们有必要说明，setState 并不是完全异步的，只是说有一个队列机制。React 内部在处理 React 合成事件和生命周期函数中的 setState 调用时是延后处理更新操作，而对于原生事件和特殊的 setTimeout 中的 setState 调用则会立即更新。
+
+```javascript
+class App extends React.Component {
+  state = { val: 0 }
+
+  componentDidMount() {
+    this.setState({ val: this.state.val + 1 })
+    console.log(this.state.val)
+
+    this.setState({ val: this.state.val + 1 })
+    console.log(this.state.val)
+
+    setTimeout(_ => {
+      this.setState({ val: this.state.val + 1 })
+      console.log(this.state.val);
+
+      this.setState({ val: this.state.val + 1 })
+      console.log(this.state.val)
+    }, 0)
+  }
+
+  render() {
+    return <div>{this.state.val}</div>
+  }
+}
+// 0
+// 0
+// 2
+// 3
+```
+
+#### React 的事件机制
+
+setState 一节中我们提到了 React 合成事件与原生事件的概念，如果 DOM 上绑定了过多的事件处理函数，整个页面响应以及内存占用可能都会受到影响。React 为了避免这类 DOM 事件滥用，同时屏蔽底层不同浏览器之间的事件系统差异，实现了一个中间层——SyntheticEvent（合成事件）。
+
+其实在原生 JS 中已经在利用事件冒泡机制来实现事件委托，从而提高页面性能；
+
+```javascript
+var oUl = document.getElementById("ul1");
+　　oUl.onclick = function(ev){
+　　　　var ev = ev || window.event;
+　　　　var target = ev.target || ev.srcElement;
+　　　　if(target.nodeName.toLowerCase() == 'li'){
+　　　　　　　  alert(target.innerHTML);
+　　　　}
+　　}
+```
+
+jQuery 中提供 on 方法简化了声明事件委托的方式。
+
+在 React 组件中声明事件时并没有直接绑定到对应的原生 DOM 上，而是绑定在 document 节点上，依靠 React 自己实现的一套事件冒泡机制进行事件委托，同时为了减少频繁创建合成事件对象，在内部维护了一个事件对象池。同时因为合成事件机制屏蔽各浏览器事件实现机制的差异，也提升了兼容性。
+
 #### React Fiber
+
+我们先来看一下 React 16 以前完成一次组件渲染的过程是怎样的：
+
+假设有如下结构的组件
+
+![react-fiber-1](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/react-fiber-1.png)
+
+在 mount 阶段渲染过程中各组件声明周期调用顺序如下
+
+![react-fiber-2](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/react-fiber-2.png)
+
+当我们的组件树很深时，这一次 mount 过程可能需要几百毫秒，而在这一过程中 React 的渲染会一直占用 js 引擎，这时如果有用户点击/输入等操作浏览器将不会处理，一直到渲染结束才会响应，从而造成页面“卡顿”的感觉。
+
+为了解决这个问题，React 16 中引入了新的 Fiber 机制将 React 的渲染过程“分片”，在每个分片任务结束后检查是否有更高级的任务需要执行（如用户操作），若有责优先处理高级任务否则继续执行下一分片的任务。这样 React 渲染的过程就变成了下面这样：
+
+![react-fiber-3](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/react-fiber-3.jpg)
 
 ### 需要手动干预的方法
 
-#### PureRender
+#### 绑定事件处理函数 this
+
+```javascript
+class Link extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0
+    }
+  }
+  handleClick(e) {
+    e.preventDefault();
+    this.setState({ count: this.state.count + 1 })
+  }
+  render() {
+    return <a href="#" onClick={this.handleClick}>Clicked me {this.state.count} times.</a>    
+  }
+
+}
+
+ReactDOM.render(<Link/>, document.querySelector("#root"))
+// Uncaught TypeError: Cannot read property 'setState' of undefined
+```
+
+我们在开始使用 React 的时候经常出现上面的错误，这其实是因为调用事件处理函数时 this 指向发生了变化，详情参考[这里](https://github.com/mqyqingfeng/Blog/issues/7)。而为了避免这种情况我们有以下四种方式来绑定 this：
+
+**render 方法中使用 bind：**
+
+```javascript
+<a href="#" onClick={this.handleClick.bind(this)}>
+    Clicked me {this.state.count} times.
+</a>
+```
+
+但这种方式其实存在性能问题：JS 中 bind 方法会生成一个新的函数，对于 render 中的自组件来说 props 中的属性有更新，会造成一次额外的渲染。
+
+**render 方法中使用肩头函数：**
+
+```javascript
+<a href="#" onClick={e => this.handleClick(e)}>
+    Clicked me {this.state.count} times.
+</a>
+```
+
+与使用 bind 一样，每次都都会生成一个新函数对象，造成额外渲染。
+
+**在构造函数内提前绑定：**
+
+```javascript
+class Link extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0
+    }
+    // 重点在这里
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick(e) {
+    e.preventDefault();
+    this.setState({ count: this.state.count + 1 })
+  }
+  render() {
+    return <a href="#" onClick={this.handleClick}>Clicked me {this.state.count} times.</a>    
+  }
+}
+
+ReactDOM.render(<Link/>, document.querySelector("#root"))
+```
+
+这样提前确定 this 指向可以避免多次绑定带来的性能问题，但是函数的定义、使用和 this 绑定分在三个不同地方，降低了代码可读性。
+
+**在 class properties 中使用箭头函数：**
+
+```javascript
+class Link extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0
+    }
+  }
+  handleClick = e => {
+    e.preventDefault();
+    this.setState({ count: this.state.count + 1 })
+  }
+  render() {
+    return <a href="#" onClick={this.handleClick}>Clicked me {this.state.count} times.</a>    
+  }
+}
+ReactDOM.render(<Link/>, document.querySelector("#root"))
+```
+
+推荐做法，在 React 16 和 ES6 条件下可以使用。
 
 #### componentShouldUpdate
 
-#### Immutable
+```javascript
+shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.color !== nextProps.color) {
+      return true;
+    }
+    if (this.state.count !== nextState.count) {
+      return true;
+    }
+    return false;
+  }
+```
 
-#### List 下的 key
+#### PureComponent
 
-#### Fragment
+声明组件时，使用 `React.PureComponent` 替代 `React.Component`，PureComponent 相当于在 shouldComponentUpdate 中做了一次“浅比较”。
+
+对于简单的数据结构来说，浅比较已经足够，但是对于拥有复杂数据结构的对象来说就会有问题：
+
+```javascript
+class WordAdder extends React.PureComponent {
+  state = {
+    user: ['aaa']
+  };
+
+  handleAddClick() {
+    const users = this.state.users;
+    users.push('bbb');
+    this.setState({ users });
+  }
+
+  render() {
+    ...
+  }
+}
+```
+
+这里当我们触发点击事件回调向用户数组中加入一个用户时，组件并没有如我们想象一样的进行一次新的渲染，因为我们直接在原来的数组对象上增加新用户数据，浅比较时会认为两者相等。
+
+这里有必要简单介绍一下 JS 中的数据类型分为原始/值类型和对象/引用类型，它们的内存示意图如下：
+
+![type-memory](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/type-memory.png)
+
+当修改原始类型的值时会改变在栈内存上对应的值，而改变对象类型时其栈上存储的地址却不会改变，造成浅比较想等，深比较不等的结果。
+
+为了解决这个问题我们会要求针对复杂数据结构的对象的修改，不要直接在原对象上操作，而是生成一个新对象：
+
+```javascript
+handleAddClick() {
+    this.setState({ users: [ ...this.state.users, 'bbb' ] });
+  }
+```
+
+利用 ES6 的扩展运算符，我们可以很便捷的生成一个全新的对象，这样在做浅比较时就得到不想等的结果，从而触发新的渲染。
+
+#### Immutable Data
+
+新的问题来了，对拥有复杂结构的对象类型来说，每次新创建一个新对象会有一定的性能损耗，每次深比较性能开销也比较大，有没有什么方式既可以浅比较又能不完全创建新对象呢？
+
+Immutable 即是这样的解决方案：对 Immutable 对象的修改每次都会返回新的 Immutable 对象，与完全创建新对象不同的是在这一过程中数据结构是共享的。
+
+![immutable](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/immutable.gif)
+
+#### Fragments
+
+`React.Fragment` 也是 React 16 中新引入的一个特性，在 React 16 之前，因为 React 要求 render 函数返回的 elements  必须有根节点，所以在渲染数组类型的数据结构时我们经常会用一个空 div 包裹我们的返回内容：
+
+```javascript
+function () {
+    return (
+        <div>
+            <div>xxx</div>
+            <div>yyy</div>
+            <div>zzz</div>
+        </div>
+    );
+}
+```
+
+但这样增加了 HTML 文档上的 DOM 对象，对渲染性能也会造成影响。
+
+React 16 针对这种场景提出了两种解决方案：
+
+可以使用`React.Fragment` 
+
+```javascript
+function () {
+    return (
+        <React.Fragment>
+            <div>xxx</div>
+            <div>yyy</div>
+            <div>zzz</div>
+        </React.Fragment>
+    );
+}
+```
+
+当然 16 版本中也开始支持返回 elements 数组
+
+```javascript
+function () {
+    return [
+         <div>xxx</div>
+         <div>yyy</div>
+         <div>zzz</div>
+    ];
+}
+```
 
 #### Context 传值
+
+![](https://github.com/xiaosansiji/cookbook-of-webdev/upload/master/performance-optimization/react-context.png)
+
+对站点全局语言切换或者像兄弟组件间消息通讯等场景，通过父子组件的 props 属性一层层向下传递不但非常繁琐，而且也会有多次渲染带来的性能问题。这时我们可以利用 React 提供的 Context 接口传递数据，实际上 react-redux/react-router 等都是通过 Context 传递数据：
+
+```javascript
+function getRouter() {
+    return (
+    <LocaleProvider locale={zhCN}>
+      <ConnectedRouter>
+        <AuthorizedRoute
+          path="/"
+          render={props => <BasicLayout {...props} />}
+          authority={['admin', 'user']}
+          redirectPath="/user/login"
+         />
+      </ConnectedRouter>
+    </LocaleProvider>
+  );
+}
+```
+
+当然要注意的是在 React 16 中对 Context 接口进行了重构，在使用时注意兼容性修改。
 
 ## 参考链接
 
@@ -272,5 +595,14 @@ underscore、lodash 等工具库中都有消抖与节流函数。
 
 [网站性能优化实战——从12.67s到1.06s的故事](https://juejin.im/post/5b0b7d74518825158e173a0c#heading-7)
 
+[React 源码剖析系列 － 不可思议的 react diff](https://zhuanlan.zhihu.com/p/20346379?spm=a2c4e.11153940.blogcont586669.10.7aa21308YhIW92)
 
+[图解React Diff算法及新架构Fiber](https://yq.aliyun.com/articles/586669)
 
+[React 是怎样炼成的](https://segmentfault.com/a/1190000013365426)
+
+[React Fiber是什么](https://zhuanlan.zhihu.com/p/26027085)
+
+[深入理解React16之：（一）.Fiber架构](https://www.jianshu.com/p/bf824722b496)
+
+[玩转 React（六）- 处理事件](https://segmentfault.com/a/1190000011877137)
