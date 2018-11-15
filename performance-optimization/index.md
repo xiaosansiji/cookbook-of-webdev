@@ -1,18 +1,24 @@
 # Web 站点性能优化
 
+- 优化什么
+- 通用优化方法
+- React 技术栈下的优化方法
+
+
+
 ## 优化什么？
 
-一次网页加载的过程：
+从浏览器角度看待网页加载的过程：
 
 ![image-20181109142635337](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/image-20181109142635337.png)
 
-常见性能指标：白屏时间、首次有效渲染时间、用户可交互时间、整页时间、DNS时间、CPU占用率、动画帧率。
-
-换个角度，从用户浏览角度看待网页加载：
+换个角度，从用户体验角度看待网页加载：
 
 ![image-20181109144732772](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/google-performance.png)
 
-构建用户为中心的性能模型：这些指标并非同样重要，很多时候需要根据产品形态、用户需求等赋予权重。
+由此我们可以得到一些常见性能指标：白屏时间、首次有效渲染时间、用户可交互时间、整页时间、DNS时间、CPU占用率、动画帧率。
+
+当然这些指标并非同样重要，很多时候需要根据产品形态、用户需求等赋予权重（构建用户为中心的性能模型）。
 
 至于怎么获取这些指标，需要一些监控的手段和工具（Lighthouse/主动监控等），可以参见之前分享的《手摸手，教你做一个前端监控系统》。
 
@@ -33,6 +39,8 @@
 浏览器针对同一域名的并行网络请求数是有限制的，根据浏览器厂家/版本或站点使用的 HTTP 协议版本的的不同限制数也不相同，大概在 2-8 个。
 
 假如一个页面有120个静态资源（css、js、img），并且所有资源都在一个域名下，使用的浏览器最大网络并行请求资源数是6，如果所有请求时间都是一样的，每个文件加载需要500ms，则所有资源加载完成需要 120/6 * 0.5 = 10s 的时间。
+
+为了减少同一域下网络请求数，我们可以采用如下几种方式：
 
 - 使用 Webpack、Gulp 等工具合并 JS/CSS 资源
 - Sprite 图
@@ -64,6 +72,8 @@
 - Gzip
 - 图片压缩
 - 使用 CSS 动画/Canvas 代替 GIF
+
+[^注意]: 在保证用户浏览体验的前提下，我们应该尽可能的减小站点请求资源大小，但这并不是说资源小了页面渲染性能一定会提升：由于一个 TCP 请求窗口在大部分情况下是 1480*10/1024 = 14.45K ，所以下载一个 15K 的文件和一个 28K 的文件从网络传输角度看时间几乎是一样的，因为这两个文件都需要两次往返传输。所以在优化静态资源大小时，14K 及它的倍数可以看作是一个个级别，级别之间的文件大小传输时间没有太大区别。当然尽量减小资源大小可以在移动场景下可以减少用户流量消耗，并非没有意义。
 
 ##### Tree-shaking
 
@@ -124,7 +134,7 @@ HTTP 缓存不详细说了，主要是利用 HTTP Header 中的 Etags、Expires 
 
 这里主要说下 HTTP/2 带来的性能上的提升：
 
-- 多路复用，降低了重复建立 TCP 连接的性能损耗
+- 多路复用，降低了重复建立 TCP 连接的性能损耗，也可以减少 TCP 慢启动带来的性能影响
 - HPACK 压缩了 HTTP Header 体积
 - Server Push 可以预先将一些资源主动推送到浏览器端，而不是等需要加载的时候才向服务端请求
 
@@ -140,7 +150,35 @@ HTTP 缓存不详细说了，主要是利用 HTTP Header 中的 Etags、Expires 
 - 骨架屏
 - SSR
 
+##### 尽早开始渲染
+
+能够尽早的拿到静态资源构建 render 树才能尽早开始页面渲染，除了优化网络传输等方法外，我们应当尽量减少 CSS/js 资源请求对渲染过程对影响。
+
+![image-20181112161111566](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/browser-render.png)
+
+这里有必要指出：各浏览器内引擎一般会做优化，不是等整个 HTML 解析完才开始绘制，而是部分构建成功 render 树后就开始绘制，以求能更快的展现页面。
+
+- 不要让外部样式或脚本 block 渲染过程
+- 优先加载关键 CSS
+
+link 尽量在 head 中，script 尽量在 body 底部，js 执行并不会影响首屏时间，但可能截断首屏的内容。
+
+收集开始渲染页面的第一个可见部分所需的所有 CSS（关键CSS）并将其内联添加到页面的 `<head>` 中，从而减少网络往返。 由于在慢启动阶段交换包的大小有限，所以关键 CSS 的预算大约是 14 KB。或者通过 HTTP/2 的 Sever Push 在请求 HTML 文档时推送关键 CSS 文件到客户端浏览器，这样可以避免更改关键 CSS 后 HTML 文档缓存失效的问题。
+
+JS 文件可以尝试使用 `async` 和 `defer` ：
+
+```javascript
+<script type="text/javascript" src="demo_async.js" async="async"></script>
+```
+
+这两个属性的标签都不会阻塞 DOM 树的更新，都是在页面渲染完成后执行，不同点在于：
+
+- async 属性的脚本会按加载完成后就执行 
+- defer 当有多个 defer 属性的脚本时会按照标签出现的先后顺序执行
+
 ##### 懒加载与预加载
+
+懒加载：
 
 懒加载主要为了提升用户可交互时间这个指标，比如，我们可以优先加载用户可视范围内的图片资源，其他的等用户滚动到可视范围内了再进行加载：
 
@@ -150,29 +188,12 @@ HTTP 缓存不详细说了，主要是利用 HTTP Header 中的 Etags、Expires 
 
 预加载：
 
-![image-20181112161111566](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/browser-render.png)
-
-
-
-这里有必要指出：各浏览器内引擎一般会做优化，不是等整个 HTML 解析完才开始绘制，而是部分构建成功 render 树后就开始绘制，以求能更快的展现页面。
-
-- 不要让外部样式或脚本 block 渲染过程
-- 优先加载关键 CSS
-
-link 尽量在 head 中，script 尽量在 body 底部。
-
-收集开始渲染页面的第一个可见部分所需的所有 CSS（关键CSS）并将其内联添加到页面的 `<head>` 中，从而减少网络往返。 由于在慢启动阶段交换包的大小有限，所以关键 CSS 的预算大约是 14 KB。或者通过 HTTP/2 的 Sever Push 在请求 HTML 文档时推送关键 CSS 文件到客户端浏览器，这样可以避免更改关键 CSS 后 HTML 文档缓存失效的问题。
-
-JS 文件可以尝试使用 async`和`defer ：
+预加载其实会牺牲一部分首屏渲染性能，换来后续用户操作的流畅性，在访问站点时有些页面会加载一些本页面没有用到的图片等资源，这些资源会缓存在浏览器内存或硬盘上，这样在后续访问其他页面时就可以加快页面展现，利用 js、CSS 或 ajax 等都可以实现，如利用 js 构建 `Image` 对象：
 
 ```javascript
-<script type="text/javascript" src="demo_async.js" async="async"></script>
+var img = new Image();
+img.src = "img/example.jpg";
 ```
-
-这两个属性的标签都不会阻塞 render 树的构建，不同点在于：
-
-- async 属性的脚本会按加载完成后就执行 
-- defer 会一直等到页面渲染完成再执行，并且当有多个 defer 属性的脚本时会按照标签出现的先后顺序执行
 
 ##### 骨架屏
 
