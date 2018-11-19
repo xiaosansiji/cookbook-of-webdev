@@ -62,9 +62,9 @@ web 前端行业现在是在一个繁荣又混乱的时代，各类框架/库层
 
 ## 工具使用
 
-## web 性能优化
+## web 站点性能优化
 
-[鸟瞰前端 , 再论性能优化]: https://juejin.im/post/59c2109cf265da066875eff5
+[查看](https://github.com/xiaosansiji/cookbook-of-webdev/blob/master/performance-optimization/index.md)
 
 ## 函数式编程
 
